@@ -1,0 +1,38 @@
+<!-- Sidebar label templates -->
+<ng-template #tplUsers>{{ 'SIDEBAR_USERS' | transloco }}</ng-template>
+<ng-template #tplCars>{{ 'SIDEBAR_CARS' | transloco }}</ng-template>
+<ng-template #tplOrders>{{ 'SIDEBAR_ORDERS' | transloco }}</ng-template>
+<ng-template #tplLogout>{{ 'SIDEBAR_LOGOUT' | transloco }}</ng-template>
+
+<div class="flex h-screen bg-background overflow-hidden">
+  <!-- Sidebar -->
+  <lib-sidebar
+    [items]="sidebarItems()"
+    [footerItems]="footerItems()"
+    [showTheme]="true"
+    [showCollapse]="true"
+    [labelDarkMode]="'SIDEBAR_DARK_MODE' | transloco"
+    [labelLightMode]="'SIDEBAR_LIGHT_MODE' | transloco"
+    [labelCollapse]="'SIDEBAR_COLLAPSE' | transloco"
+    (handleAction)="store.handleAction($event)"
+    (collapsed)="store.setSidebarCollapsed($event)"
+  />
+
+  <!-- Main area -->
+  <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
+    <!-- Navbar -->
+    <lib-navbar
+      [user]="store.navbarUser()"
+      [showTheme]="false"
+      [showLang]="true"
+      (langToggle)="store.toggleLang()"
+    />
+
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<lib-modal [modal]="modalService.config()" />

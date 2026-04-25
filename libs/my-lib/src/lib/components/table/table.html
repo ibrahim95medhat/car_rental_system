@@ -1,0 +1,188 @@
+<div class="w-full">
+  <!-- Title Bar -->
+  @if (tableTitle()) {
+  <div class="flex items-center gap-3 mb-4">
+    <h6 class="text-base font-semibold text-foreground tracking-tight">
+      {{ tableTitle() }}
+    </h6>
+    @if (listCount()) {
+    <span
+      class="flex items-center justify-center min-w-[1.4rem] h-5 text-[0.6875rem] font-semibold text-primary bg-primary/10 px-2 rounded-full"
+    >
+      {{ listCount() }}
+    </span>
+    }
+  </div>
+  }
+
+  <!-- Table -->
+  @if (dataSource().length || loading()) {
+  <div
+    class="w-full overflow-x-auto rounded-xl border border-border shadow-sm"
+    [class]="tableClass()"
+  >
+    <table class="w-full text-sm border-collapse" [id]="id()">
+      <!-- Head -->
+      <thead
+        [class.sticky]="stickyHeader()"
+        [class.top-0]="stickyHeader()"
+        [class.z-10]="stickyHeader()"
+      >
+        <tr [class]="'border-b-2 border-border ' + headerClass()">
+          @if (selectable()) {
+          <th
+            [class]="'w-10 px-4 py-3.5 bg-surface ' + (stickyFirstColumn() ? headerClass() : '')"
+            [class.sticky]="stickyFirstColumn()"
+            [class.inset-s-0]="stickyFirstColumn()"
+            [class.z-10]="stickyFirstColumn()"
+          >
+            <input
+              type="checkbox"
+              [checked]="isAllSelected"
+              (change)="toggleAll($event)"
+              class="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+            />
+          </th>
+          } @for (col of displayedColumns(); track col.field; let isFirst =
+          $first) {
+          <th
+            [class]="'px-4 py-3.5 text-start text-[0.6875rem] font-bold text-muted uppercase tracking-widest whitespace-nowrap ' + (isFirst && stickyFirstColumn() && !selectable() ? headerClass() : '')"
+            [class.cursor-pointer]="col.isSortable"
+            [class.select-none]="col.isSortable"
+            [class.sticky]="isFirst && stickyFirstColumn() && !selectable()"
+            [class.inset-s-0]="isFirst && stickyFirstColumn() && !selectable()"
+            [class.z-10]="isFirst && stickyFirstColumn() && !selectable()"
+            [class.bg-surface]="isFirst && stickyFirstColumn() && !selectable()"
+            (mouseenter)="!col.isSorted && (col.isColumnHover = true)"
+            (mouseleave)="!col.isSorted && (col.isColumnHover = false)"
+            (click)="sortColumn(col)"
+          >
+            <div class="flex items-center gap-1.5">
+              @if (col.headerTemplate) {
+              <ng-container [ngTemplateOutlet]="col.headerTemplate" />
+              } @else {
+              <span>{{ col.header }}</span>
+              } @if (col.isRequired) { <span class="text-error">*</span> }
+
+              <!-- Sort icons -->
+              @if (col.isSortable) { @if (!col.isSorted && col.isColumnHover) {
+              <!-- hover: neutral -->
+              <lib-chevron-down-icon iconClass="opacity-30" />
+              } @if (col.isSorted === 'asc') {
+              <!-- asc -->
+              <lib-chevron-up-icon iconClass="text-primary" />
+              } @if (col.isSorted === 'desc') {
+              <!-- desc -->
+              <lib-chevron-down-icon iconClass="text-primary" />
+              } }
+            </div>
+          </th>
+          }
+        </tr>
+      </thead>
+
+      <!-- Body -->
+      <tbody>
+        @if (loading()) { @for (i of [1,2,3,4,5]; track i) {
+        <tr class="border-b border-border/60 animate-pulse">
+          @if (selectable()) {
+          <td class="px-4 py-3.5">
+            <div class="h-4 w-4 bg-border rounded"></div>
+          </td>
+          } @for (col of displayedColumns(); track col.field) {
+          <td class="px-4 py-3.5">
+            <div
+              class="h-4 rounded-md bg-border"
+              [style.width]="(50 + (col.field.length * 3)) + '%'"
+            ></div>
+          </td>
+          }
+        </tr>
+        } } @else { @for (row of dataSource(); track $index; let rowIndex =
+        $index) {
+        <tr
+          [class]="'relative border-b border-border/60 last:border-0 transition-colors duration-150 ' + (hoveredRowIndex() === rowIndex && !disableHover() ? hoverClass() : bodyClass()) + ' ' + rowStyle()"
+          (mouseenter)="!disableHover() && hoveredRowIndex.set(rowIndex)"
+          (mouseleave)="!disableHover() && hoveredRowIndex.set(null)"
+        >
+          @if (selectable()) {
+          <td
+            class="px-4 py-3.5 bg-surface"
+            [class.sticky]="stickyFirstColumn()"
+            [class.inset-s-0]="stickyFirstColumn()"
+          >
+            <input
+              type="checkbox"
+              [checked]="isSelected(row)"
+              (change)="toggleElement($event, row)"
+              class="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+            />
+          </td>
+          } @for (col of displayedColumns(); track col.field; let isFirst =
+          $first) {
+          <td
+            [class]="'px-4 py-3.5 whitespace-nowrap text-foreground text-[0.8125rem] ' + cellStyle()"
+            [class.sticky]="isFirst && stickyFirstColumn() && !selectable()"
+            [class.inset-s-0]="isFirst && stickyFirstColumn() && !selectable()"
+            [class.bg-surface]="isFirst && stickyFirstColumn() && !selectable()"
+          >
+            <!-- View icon: absolutely positioned at row start, inside first cell, no layout shift -->
+            @if (isFirst && !disableHover() && getRowViewIconRouterLink(row)) {
+            <div
+              class="absolute inset-y-0 inset-s-0 flex items-center ps-3 pointer-events-none"
+              style="z-index: 20; transition: opacity 0.15s ease"
+              [style.opacity]="hoveredRowIndex() === rowIndex ? '1' : '0'"
+            >
+              <a
+                [routerLink]="getRowViewIconRouterLink(row)"
+                (click)="onViewIconClick(row)"
+                class="pointer-events-auto flex items-center gap-1.5 text-primary text-[0.6875rem] font-semibold bg-surface border border-primary/30 px-2.5 py-1 rounded-lg cursor-pointer transition-all duration-150"
+              >
+                <lib-view-icon />
+                View
+              </a>
+            </div>
+            }
+
+            <!-- Custom template if provided -->
+            @if (getTemplateForColumn(col.field); as tmpl) {
+            <ng-container
+              [ngTemplateOutlet]="tmpl"
+              [ngTemplateOutletContext]="{ $implicit: row, i: rowIndex }"
+            />
+            } @else {
+            <!-- Default cell render -->
+            <span class="text-foreground/90">{{ renderCell(col, row) }}</span>
+            }
+          </td>
+          }
+        </tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+  }
+
+  <!-- Empty state -->
+  @if (!dataSource().length && !loading()) {
+  <lib-empty-state [title]="emptyMessage()" />
+  }
+
+  <!-- Embedded Pagination -->
+  @if (enablePagination()) {
+  <div class="mt-4">
+    <lib-pagination
+      [currentPage]="currentPage()"
+      [lastPage]="lastPage()"
+      [from]="from()"
+      [to]="to()"
+      [total]="total()"
+      [links]="paginationLinks()"
+      [perPage]="perPage()"
+      [perPageOptions]="perPageOptions()"
+      (pageChange)="pageChange.emit($event)"
+      (perPageChange)="perPageChange.emit($event)"
+    />
+  </div>
+  }
+</div>

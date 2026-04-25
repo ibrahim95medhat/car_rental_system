@@ -1,0 +1,31 @@
+<!-- Column header templates -->
+<ng-template #colId>{{ 'USERS_COL_ID' | transloco }}</ng-template>
+<ng-template #colName>{{ 'USERS_COL_NAME' | transloco }}</ng-template>
+<ng-template #colEmail>{{ 'USERS_COL_EMAIL' | transloco }}</ng-template>
+<ng-template #colRole>{{ 'USERS_COL_ROLE' | transloco }}</ng-template>
+<ng-template #colCountry>{{ 'USERS_COL_COUNTRY' | transloco }}</ng-template>
+
+<div class="p-6">
+  <div class="mb-4">
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <lib-table
+    [dataSource]="store.users()"
+    [columns]="columns()"
+    [loading]="store.usersLoading()"
+    [tableTitle]="'ADMIN_USERS_TITLE' | transloco"
+    [stickyFirstColumn]="true"
+    [enablePagination]="true"
+    [listCount]="store.usersMeta()?.total ?? store.users().length"
+    [currentPage]="store.usersMeta()?.current_page ?? 1"
+    [lastPage]="store.usersMeta()?.last_page ?? 1"
+    [from]="store.usersMeta()?.from ?? 0"
+    [to]="store.usersMeta()?.to ?? 0"
+    [total]="store.usersMeta()?.total ?? 0"
+    [paginationLinks]="store.usersMeta()?.links ?? []"
+    [perPage]="store.filters().per_page ?? 10"
+    (pageChange)="store.setPage($event)"
+    (perPageChange)="store.setPerPage($event)"
+  />
+</div>

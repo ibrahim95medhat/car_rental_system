@@ -1,0 +1,108 @@
+<div class="p-6 max-w-3xl mx-auto">
+  <!-- Back link -->
+  <a
+    routerLink="/admin/users"
+    class="inline-flex items-center gap-1.5 text-sm text-primary font-medium mb-6 hover:underline"
+  >
+    <lib-arrow-left-icon width="1rem" height="1rem" />
+    {{ 'USER_DETAIL_BACK' | transloco }}
+  </a>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <lib-spinner [fullPage]="true" />
+  }
+
+  <!-- Error -->
+  @if (error()) {
+  <div
+    class="rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm px-4 py-3"
+  >
+    {{ error() }}
+  </div>
+  }
+
+  <!-- User card -->
+  @if (!loading() && user(); as u) {
+  <div
+    class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden"
+  >
+    <!-- Header -->
+    <div
+      class="flex items-center gap-4 px-6 py-5 border-b border-border bg-surface-alt"
+    >
+      <div
+        class="size-14 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-bold uppercase select-none"
+      >
+        {{ u.name.charAt(0) }}
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold text-foreground">{{ u.name }}</h1>
+        <p class="text-sm text-muted-foreground">{{ u.email }}</p>
+      </div>
+      <span
+        class="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full capitalize"
+        [class]="u.role === 'admin'
+            ? 'bg-purple-100 text-purple-700'
+            : 'bg-green-100 text-green-700'"
+      >
+        {{ u.role }}
+      </span>
+    </div>
+
+    <!-- Details grid -->
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-border"
+    >
+      <dl class="divide-y divide-border">
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_ID' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">#{{ u.id }}</dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_PHONE' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ u.phone ?? '—' }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_COUNTRY' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ u.country ?? '—' }}
+          </dd>
+        </div>
+      </dl>
+      <dl class="divide-y divide-border">
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_WALLET' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">{{ u.wallet }}</dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_CREATED' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ u.created_at | date: 'mediumDate' }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'USER_DETAIL_FIELD_UPDATED' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ (u.updated_at | date: 'mediumDate') ?? '—' }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+  }
+</div>

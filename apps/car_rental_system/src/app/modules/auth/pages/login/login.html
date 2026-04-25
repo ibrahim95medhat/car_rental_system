@@ -1,0 +1,96 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-background px-4 py-12"
+>
+  <div class="w-full max-w-md">
+    <!-- Card -->
+    <div class="rounded-2xl border border-border bg-surface shadow-sm p-8">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-bold text-foreground">
+          {{ 'LOGIN_TITLE' | transloco }}
+        </h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          {{ 'LOGIN_SUBTITLE' | transloco }}
+        </p>
+      </div>
+
+      <!-- Role Toggle -->
+      <div
+        class="mb-6 flex rounded-lg border border-border bg-surface-alt p-1 gap-1"
+      >
+        <lib-button
+          id="role-customer"
+          type="button"
+          [label]="'LOGIN_ROLE_CUSTOMER' | transloco"
+          [variant]="store.selectedRole() === 'customer' ? 'primary' : 'ghost'"
+          size="sm"
+          btnClass="flex-1"
+          (click)="store.selectRole('customer')"
+          (keydown.enter)="store.selectRole('customer')"
+        />
+        <lib-button
+          id="role-admin"
+          type="button"
+          [label]="'LOGIN_ROLE_ADMIN' | transloco"
+          [variant]="store.selectedRole() === 'admin' ? 'primary' : 'ghost'"
+          size="sm"
+          btnClass="flex-1"
+          (click)="store.selectRole('admin')"
+          (keydown.enter)="store.selectRole('admin')"
+        />
+      </div>
+
+      <!-- Form -->
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        (input)="store.clearServerError()"
+        class="space-y-4"
+      >
+        <!-- Server error -->
+        @if (store.serverError()) {
+        <div
+          class="rounded-lg bg-error/10 border border-error/30 px-4 py-3 text-sm text-error"
+        >
+          {{ store.serverError() }}
+        </div>
+        }
+
+        <lib-input
+          [label]="'LOGIN_EMAIL_LABEL' | transloco"
+          type="email"
+          [placeholder]="'LOGIN_EMAIL_PLACEHOLDER' | transloco"
+          controlName="email"
+        />
+
+        <lib-input
+          [label]="'LOGIN_PASSWORD_LABEL' | transloco"
+          type="password"
+          [placeholder]="'LOGIN_PASSWORD_PLACEHOLDER' | transloco"
+          controlName="password"
+        />
+
+        <lib-button
+          id="btn-signin"
+          [label]="'LOGIN_SUBMIT' | transloco"
+          type="submit"
+          variant="primary"
+          size="md"
+          btnClass="w-full mt-2"
+          [isLoading]="store.isLoading()"
+          [disabled]="store.isLoading() || form.invalid"
+        />
+      </form>
+
+      <!-- Footer -->
+      <p class="mt-6 text-center text-sm text-muted-foreground">
+        {{ 'LOGIN_NO_ACCOUNT' | transloco }}
+        <a
+          routerLink="/register"
+          class="text-primary font-medium hover:underline"
+          >{{ 'LOGIN_REGISTER_LINK' | transloco }}</a
+        >
+      </p>
+    </div>
+  </div>
+</div>

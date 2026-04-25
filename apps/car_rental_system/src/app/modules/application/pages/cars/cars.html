@@ -1,0 +1,256 @@
+<div class="p-6 max-w-7xl mx-auto">
+  <!-- Order form template -->
+  <ng-template #orderFormTmpl>
+    <div class="relative">
+      @if (ordersStore.submitting()) {
+      <div
+        class="absolute inset-0 z-10 bg-surface/60 backdrop-blur-[1px] rounded-lg flex items-center justify-center"
+      >
+        <svg
+          class="animate-spin h-6 w-6 text-primary"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8z"
+          />
+        </svg>
+      </div>
+      }
+      <form
+        [formGroup]="ordersStore.form"
+        (ngSubmit)="ordersStore.onSubmit()"
+        class="flex flex-col gap-4"
+      >
+        <div class="flex gap-3">
+          <lib-input
+            class="flex-1"
+            controlName="delivery_date"
+            type="date"
+            [min]="today"
+            [label]="'ORDER_FORM_DELIVERY' | transloco"
+          />
+          <lib-input
+            class="flex-1"
+            controlName="receiving_date"
+            type="date"
+            [min]="ordersStore.deliverySignal() || today"
+            [label]="'ORDER_FORM_RETURN' | transloco"
+          />
+        </div>
+
+        @if (ordersStore.estimatedDays() > 0) {
+        <div
+          class="rounded-lg bg-primary/5 border border-primary/20 px-4 py-2.5 text-sm flex items-center justify-between"
+        >
+          <span class="text-muted"
+            >{{ 'ORDER_FORM_DURATION' | transloco }}</span
+          >
+          <span class="font-semibold text-primary"
+            >{{ ordersStore.estimatedDays() }} {{ 'ORDER_FORM_DAYS' | transloco
+            }}</span
+          >
+        </div>
+        }
+
+        <div class="flex gap-3">
+          <div class="flex flex-col gap-1 flex-1">
+            <label
+              for="car-page-payment-type"
+              class="text-sm font-medium text-foreground"
+              >{{ 'ORDER_FORM_PAYMENT_METHOD' | transloco }}</label
+            >
+            <select
+              id="car-page-payment-type"
+              formControlName="payment_type"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            >
+              @for (type of ordersStore.paymentTypes; track type) {
+              <option [value]="type" class="capitalize">{{ type }}</option>
+              }
+            </select>
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <label
+              for="car-page-order-type"
+              class="text-sm font-medium text-foreground"
+              >{{ 'ORDER_FORM_ORDER_TYPE' | transloco }}</label
+            >
+            <select
+              id="car-page-order-type"
+              formControlName="order_type"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            >
+              @for (type of ordersStore.orderTypes; track type) {
+              <option [value]="type" class="capitalize">{{ type }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @if (ordersStore.isInstallment()) {
+        <div class="flex gap-3">
+          <lib-input
+            class="flex-1"
+            controlName="down_payment"
+            type="number"
+            [label]="'ORDER_FORM_DOWN_PAYMENT' | transloco"
+            placeholder="0"
+          />
+          <lib-input
+            class="flex-1"
+            controlName="number_of_installments"
+            type="number"
+            [label]="'ORDER_FORM_INSTALLMENTS_COUNT' | transloco"
+            placeholder="3"
+          />
+        </div>
+        }
+
+        <div class="flex justify-end gap-3 pt-2">
+          <lib-button
+            type="button"
+            variant="ghost"
+            [label]="'ORDER_FORM_CANCEL' | transloco"
+            (click)="ordersStore.modalSvc.close()"
+          />
+          <lib-button
+            type="submit"
+            variant="primary"
+            [label]="ordersStore.submitting() ? ('ORDER_FORM_SUBMITTING' | transloco) : ('ORDER_FORM_SUBMIT' | transloco)"
+            [disabled]="ordersStore.form.invalid || ordersStore.submitting()"
+            [isLoading]="ordersStore.submitting()"
+          />
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  <!-- Header + Search -->
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
+  >
+    <div>
+      <h1 class="text-2xl font-bold text-foreground">
+        {{ 'CUSTOMER_CARS_TITLE' | transloco }}
+      </h1>
+      <p class="text-sm text-muted-foreground mt-1">
+        {{ 'CUSTOMER_CARS_SUBTITLE' | transloco }}
+      </p>
+    </div>
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <!-- Loading skeleton -->
+  @if (store.carsLoading()) {
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    @for (item of [1,2,3,4,5,6]; track item) {
+    <div
+      class="rounded-xl border border-border bg-surface animate-pulse h-44"
+    ></div>
+    }
+  </div>
+  } @else if (!store.cars().length) {
+  <div
+    class="flex flex-col items-center justify-center py-20 text-muted-foreground"
+  >
+    <p class="text-lg font-medium">
+      {{ 'CUSTOMER_CARS_EMPTY_TITLE' | transloco }}
+    </p>
+    <p class="text-sm mt-1">{{ 'CUSTOMER_CARS_EMPTY_SUBTITLE' | transloco }}</p>
+  </div>
+  } @else {
+  <!-- Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    @for (car of store.cars(); track car.id) {
+    <div
+      class="rounded-xl border border-border bg-surface shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
+    >
+      <!-- Colored header band -->
+      <div class="h-2 bg-linear-to-r from-primary to-primary/60"></div>
+      <div class="p-5 flex flex-col flex-1 gap-3">
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <h2 class="text-base font-semibold text-foreground leading-tight">
+              {{ car.name }}
+            </h2>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              {{ car.brand }} &bull; {{ car.model }}
+            </p>
+          </div>
+          <span class="shrink-0 text-primary font-bold text-sm">
+            ${{ car.price_per_day }}<span
+              class="text-xs font-normal text-muted-foreground"
+              >{{ 'CUSTOMER_CARS_PER_DAY' | transloco }}</span
+            >
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+          <span class="flex items-center gap-1">
+            <svg
+              class="size-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 6v6l4 2"
+              />
+              <circle cx="12" cy="12" r="10" />
+            </svg>
+            {{ car.kilometers | number }} km
+          </span>
+        </div>
+
+        <div class="mt-auto pt-3 border-t border-border flex gap-2">
+          <a
+            [routerLink]="['/cars', car.id]"
+            class="flex-1 text-center py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-surface-alt transition-all cursor-pointer"
+          >
+            {{ 'CUSTOMER_CARS_DETAILS' | transloco }}
+          </a>
+          <button
+            type="button"
+            (click)="rentNow(car.id)"
+            class="flex-1 text-center py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all cursor-pointer"
+          >
+            {{ 'CUSTOMER_CARS_RENT_NOW' | transloco }}
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  @if (store.carsMeta()) {
+  <div class="mt-6">
+    <lib-pagination
+      [currentPage]="store.carsMeta()!.current_page"
+      [lastPage]="store.carsMeta()!.last_page"
+      [from]="store.carsMeta()!.from"
+      [to]="store.carsMeta()!.to"
+      [total]="store.carsMeta()!.total"
+      [links]="store.carsMeta()!.links"
+      [perPage]="store.filters().per_page ?? 10"
+      [perPageOptions]="[10, 20, 50]"
+      (pageChange)="store.setPage($event)"
+      (perPageChange)="store.setPerPage($event)"
+    />
+  </div>
+  } }
+</div>

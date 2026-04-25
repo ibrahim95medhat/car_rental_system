@@ -1,0 +1,53 @@
+<div class="p-6">
+  <!-- Actions template -->
+  <ng-template #actionsTmpl let-installment>
+    @if (installment.status !== 'paid') {
+    <lib-button
+      size="sm"
+      [label]="store.payingId() === installment.id ? ('INSTALLMENT_PAYING' | transloco) : ('INSTALLMENT_PAY_NOW' | transloco)"
+      [disabled]="store.payingId() === installment.id"
+      [isLoading]="store.payingId() === installment.id"
+      (click)="store.payInstallment(installment.id)"
+    />
+    } @else {
+    <span class="text-xs text-green-600 font-medium"
+      >{{ 'INSTALLMENT_PAID' | transloco }}</span
+    >
+    }
+  </ng-template>
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h1 class="text-2xl font-bold text-foreground">
+      {{ 'CUSTOMER_INSTALLMENTS_TITLE' | transloco }}
+    </h1>
+    <p class="text-sm text-muted-foreground mt-1">
+      {{ 'CUSTOMER_INSTALLMENTS_SUBTITLE' | transloco }}
+    </p>
+  </div>
+
+  <!-- Search -->
+  <div class="mb-4">
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <!-- Table -->
+  <lib-table
+    [dataSource]="store.installments()"
+    [columns]="columns"
+    [loading]="store.installmentsLoading()"
+    tableTitle="Installments"
+    [stickyFirstColumn]="true"
+    [enablePagination]="true"
+    [listCount]="store.installmentsMeta()?.total ?? store.installments().length"
+    [currentPage]="store.installmentsMeta()?.current_page ?? 1"
+    [lastPage]="store.installmentsMeta()?.last_page ?? 1"
+    [from]="store.installmentsMeta()?.from ?? 0"
+    [to]="store.installmentsMeta()?.to ?? 0"
+    [total]="store.installmentsMeta()?.total ?? 0"
+    [paginationLinks]="store.installmentsMeta()?.links ?? []"
+    [perPage]="store.perPage()"
+    [bodyTabTemplateRef]="[{ identifier: 'actions', template: actionsTmpl }]"
+    (pageChange)="store.setPage($event)"
+  />
+</div>

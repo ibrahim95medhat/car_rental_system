@@ -1,0 +1,40 @@
+<!-- Nav label templates -->
+<ng-template #tplCars>{{ 'NAV_CARS' | transloco }}</ng-template>
+<ng-template #tplOrders>{{ 'NAV_MY_ORDERS' | transloco }}</ng-template>
+<ng-template #tplInstallments>{{ 'NAV_INSTALLMENTS' | transloco }}</ng-template>
+
+<div class="flex flex-col min-h-screen bg-background">
+  <!-- Navbar -->
+  <lib-navbar
+    [navItems]="navItems()"
+    [user]="navbarUser()"
+    [showTheme]="true"
+    [showLang]="true"
+    (menuToggle)="onMenuToggle()"
+    (langToggle)="onLangToggle()"
+  >
+    <lib-button
+      slot="actions"
+      type="button"
+      variant="outlined"
+      size="sm"
+      [label]="'SIDEBAR_LOGOUT' | transloco"
+      (click)="onLogout()"
+    />
+  </lib-navbar>
+
+  <!-- Page content -->
+  <main class="flex-1 container mx-auto px-4 py-8">
+    <router-outlet />
+  </main>
+
+  <!-- Modal outlet -->
+  <lib-modal [modal]="modalService.config()" />
+
+  <!-- Footer -->
+  <footer
+    class="border-t border-border py-4 text-center text-xs text-muted-foreground"
+  >
+    &copy; {{ 2026 }} {{ 'FOOTER_COPYRIGHT' | transloco }}
+  </footer>
+</div>

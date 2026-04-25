@@ -1,0 +1,27 @@
+<button
+  [id]="id() || null"
+  [type]="type()"
+  [class]="computedClasses()"
+  [disabled]="disabled() || isLoading()"
+>
+  <!-- Loading spinner -->
+  @if (isLoading()) {
+  <span
+    class="w-[1em] h-[1em] border-2 border-current/30 border-t-current rounded-full animate-spin"
+  ></span>
+  }
+
+  <!-- Start icon slot -->
+  <ng-content select="[slot=start-icon]" />
+
+  <!-- Label -->
+  @if (label()) {
+  <span>{{ label() }}</span>
+  }
+
+  <!-- Default content (no slot) -->
+  <ng-content />
+
+  <!-- End icon slot -->
+  <ng-content select="[slot=end-icon]" />
+</button>

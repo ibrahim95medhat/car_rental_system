@@ -1,0 +1,181 @@
+<div class="p-6 max-w-3xl mx-auto">
+  <!-- Back link -->
+  <a
+    routerLink="/admin/orders"
+    class="inline-flex items-center gap-1.5 text-sm text-primary font-medium mb-6 hover:underline"
+  >
+    <lib-arrow-left-icon width="1rem" height="1rem" />
+    {{ 'ORDER_DETAIL_BACK' | transloco }}
+  </a>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <lib-spinner [fullPage]="true" />
+  }
+
+  <!-- Error -->
+  @if (error()) {
+  <div
+    class="rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm px-4 py-3"
+  >
+    {{ error() }}
+  </div>
+  }
+
+  <!-- Order card -->
+  @if (!loading() && order(); as o) {
+  <div
+    class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden"
+  >
+    <!-- Header -->
+    <div
+      class="flex items-center gap-4 px-6 py-5 border-b border-border bg-surface-alt"
+    >
+      <div>
+        <h1 class="text-lg font-semibold text-foreground">
+          {{ 'ORDER_DETAIL_TITLE' | transloco }} #{{ o.id }}
+        </h1>
+        <p class="text-sm text-muted-foreground">
+          {{ o['car']?.['name'] ?? ('ORDER_DETAIL_CAR_UNKNOWN' | transloco) }}
+        </p>
+      </div>
+      <span
+        class="ml-auto text-xs font-semibold px-2.5 py-1 rounded-full capitalize"
+        [class.bg-green-100]="o.payment_status === 'success'"
+        [class.text-green-700]="o.payment_status === 'success'"
+        [class.bg-red-100]="o.payment_status === 'failed'"
+        [class.text-red-700]="o.payment_status === 'failed'"
+        [class.bg-yellow-100]="o.payment_status === 'pending'"
+        [class.text-yellow-700]="o.payment_status === 'pending'"
+      >
+        {{ o.payment_status }}
+      </span>
+    </div>
+
+    <!-- Details grid -->
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-border"
+    >
+      <dl class="divide-y divide-border">
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_CUSTOMER' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ o['user']?.['name'] ?? o.user_id }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_CAR' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ o['car']?.['name'] ?? o.car_id }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_DELIVERY' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ o.delivery_date }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_RETURN' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">
+            {{ o.receiving_date }}
+          </dd>
+        </div>
+      </dl>
+      <dl class="divide-y divide-border">
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_DAYS' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground">{{ o.days }}</dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_TOTAL' | transloco }}
+          </dt>
+          <dd class="text-sm font-semibold text-primary">
+            ${{ o.total_price }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_PAYMENT_TYPE' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground capitalize">
+            {{ o.payment_type }}
+          </dd>
+        </div>
+        <div class="flex justify-between px-6 py-4">
+          <dt class="text-sm text-muted-foreground">
+            {{ 'ORDER_DETAIL_ORDER_TYPE' | transloco }}
+          </dt>
+          <dd class="text-sm font-medium text-foreground capitalize">
+            {{ o.order_type }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Installment details (only if applicable) -->
+    @if (o.order_type === 'installments') {
+    <div class="border-t border-border divide-y divide-border">
+      @if (o.down_payment) {
+      <div class="flex justify-between px-6 py-4">
+        <dt class="text-sm text-muted-foreground">
+          {{ 'ORDER_DETAIL_DOWN_PAYMENT' | transloco }}
+        </dt>
+        <dd class="text-sm font-medium text-foreground">
+          ${{ o.down_payment }}
+        </dd>
+      </div>
+      } @if (o.number_of_installments) {
+      <div class="flex justify-between px-6 py-4">
+        <dt class="text-sm text-muted-foreground">
+          {{ 'ORDER_DETAIL_INSTALLMENTS' | transloco }}
+        </dt>
+        <dd class="text-sm font-medium text-foreground">
+          {{ o.number_of_installments }}
+        </dd>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Actions -->
+    <div class="flex gap-3 px-6 py-5 border-t border-border bg-surface-alt">
+      <lib-button
+        id="btn-mark-pending"
+        [label]="'ADMIN_ORDERS_MARK_PENDING' | transloco"
+        variant="outlined"
+        [isLoading]="updatingStatus() === 'pending'"
+        [disabled]="o.payment_status === 'pending'"
+        (click)="updateStatus('pending')"
+      />
+      <lib-button
+        id="btn-mark-paid"
+        [label]="'ADMIN_ORDERS_MARK_PAID' | transloco"
+        variant="secondary"
+        [isLoading]="updatingStatus() === 'success'"
+        [disabled]="o.payment_status === 'success'"
+        (click)="updateStatus('success')"
+      />
+      <lib-button
+        id="btn-mark-failed"
+        [label]="'ADMIN_ORDERS_MARK_FAILED' | transloco"
+        variant="danger"
+        [isLoading]="updatingStatus() === 'failed'"
+        [disabled]="o.payment_status === 'failed'"
+        (click)="updateStatus('failed')"
+      />
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,73 @@
+<!-- Column header templates -->
+<ng-template #colId>{{ 'ORDERS_COL_ID' | transloco }}</ng-template>
+<ng-template #colUser>{{ 'ORDERS_COL_USER' | transloco }}</ng-template>
+<ng-template #colCar>{{ 'ORDERS_COL_CAR' | transloco }}</ng-template>
+<ng-template #colTotal>{{ 'ORDERS_COL_TOTAL' | transloco }}</ng-template>
+<ng-template #colStatus>{{ 'ORDERS_COL_STATUS' | transloco }}</ng-template>
+<ng-template #colActions>{{ 'ORDERS_COL_ACTIONS' | transloco }}</ng-template>
+
+<div class="p-6">
+  <ng-template #statusTmpl let-order>
+    @if (order.payment_status === 'success') {
+    <lib-badge [label]="'ORDER_STATUS_SUCCESS' | transloco" variant="success" />
+    } @else if (order.payment_status === 'failed') {
+    <lib-badge [label]="'ORDER_STATUS_FAILED' | transloco" variant="danger" />
+    } @else {
+    <lib-badge [label]="'ORDER_STATUS_PENDING' | transloco" variant="warning" />
+    }
+  </ng-template>
+
+  <ng-template #actionsTmpl let-order>
+    <div class="flex gap-2">
+      <lib-button
+        [id]="'btn-mark-pending-' + order.id"
+        [label]="'ADMIN_ORDERS_MARK_PENDING' | transloco"
+        variant="outlined"
+        size="sm"
+        [isLoading]="store.updatingId() === order.id && store.updatingStatus() === 'pending'"
+        (click)="store.updatePaymentStatus({ id: order.id, payload: { payment_status: 'pending' } })"
+      />
+      <lib-button
+        [id]="'btn-mark-paid-' + order.id"
+        [label]="'ADMIN_ORDERS_MARK_PAID' | transloco"
+        variant="secondary"
+        size="sm"
+        [isLoading]="store.updatingId() === order.id && store.updatingStatus() === 'success'"
+        (click)="store.updatePaymentStatus({ id: order.id, payload: { payment_status: 'success' } })"
+      />
+      <lib-button
+        [id]="'btn-mark-failed-' + order.id"
+        [label]="'ADMIN_ORDERS_MARK_FAILED' | transloco"
+        variant="danger"
+        size="sm"
+        [isLoading]="store.updatingId() === order.id && store.updatingStatus() === 'failed'"
+        (click)="store.updatePaymentStatus({ id: order.id, payload: { payment_status: 'failed' } })"
+      />
+    </div>
+  </ng-template>
+
+  <!-- Search -->
+  <div class="mb-4">
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <lib-table
+    [dataSource]="store.orders()"
+    [columns]="columns()"
+    [loading]="store.ordersLoading()"
+    [tableTitle]="'ADMIN_ORDERS_TITLE' | transloco"
+    [stickyFirstColumn]="true"
+    [enablePagination]="true"
+    [listCount]="store.ordersMeta()?.total ?? store.orders().length"
+    [currentPage]="store.ordersMeta()?.current_page ?? 1"
+    [lastPage]="store.ordersMeta()?.last_page ?? 1"
+    [from]="store.ordersMeta()?.from ?? 0"
+    [to]="store.ordersMeta()?.to ?? 0"
+    [total]="store.ordersMeta()?.total ?? 0"
+    [paginationLinks]="store.ordersMeta()?.links ?? []"
+    [perPage]="store.filters().per_page ?? 10"
+    (pageChange)="store.setPage($event)"
+    (perPageChange)="store.setPerPage($event)"
+    [bodyTabTemplateRef]="[{ identifier: 'actions', template: actionsTmpl }, { identifier: 'payment_status', template: statusTmpl }]"
+  />
+</div>

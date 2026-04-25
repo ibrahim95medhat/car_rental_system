@@ -1,0 +1,172 @@
+/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+/* Shared lib styles */
+@import '../../../libs/my-lib/src/styles/main.css';
+@import '../../../libs/my-lib/src/styles/light.css';
+@import '../../../libs/my-lib/src/styles/dark.css';
+
+@source "./app";
+@source "../../../libs/my-lib";
+
+/* ===== Tailwind Theme Tokens ===== */
+@theme {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-text);
+  --color-surface: var(--color-surface);
+  --color-surface-alt: var(--color-surface-alt);
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-foreground: var(--color-primary-foreground);
+
+  --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-foreground: var(--color-accent-foreground);
+
+  --color-muted: var(--color-text-muted);
+  --color-subtle: var(--color-text-subtle);
+
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-info: var(--color-info);
+}
+
+/* ===== ngx-material-intl-tel-input overrides ===== */
+
+/* Full-width wrapper */
+ngx-material-intl-tel-input .mat-mdc-form-field {
+  width: 100%;
+}
+
+/* Strip ALL Material outline chrome */
+ngx-material-intl-tel-input .mdc-notched-outline__leading,
+ngx-material-intl-tel-input .mdc-notched-outline__notch,
+ngx-material-intl-tel-input .mdc-notched-outline__trailing {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove subscript / hint text area */
+ngx-material-intl-tel-input .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Remove Material internal padding */
+ngx-material-intl-tel-input .mat-mdc-text-field-wrapper,
+ngx-material-intl-tel-input .mdc-text-field {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+ngx-material-intl-tel-input .mat-mdc-form-field-infix {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  min-height: unset !important;
+  border-top: none !important;
+}
+
+/* Hide Material floating label — we render our own label above */
+ngx-material-intl-tel-input .mdc-floating-label,
+ngx-material-intl-tel-input .mat-mdc-floating-label {
+  display: none !important;
+}
+
+/* The flex row: styled to match lib-input */
+ngx-material-intl-tel-input .mat-mdc-form-field-flex {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  align-items: center;
+  padding: 0 0.75rem !important;
+  height: 2.5rem;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+ngx-material-intl-tel-input .mat-mdc-form-field-flex:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(var(--color-primary-rgb, 37 99 235) / 0.15);
+}
+
+/* Input text */
+ngx-material-intl-tel-input .mat-mdc-input-element,
+ngx-material-intl-tel-input .mdc-text-field__input {
+  color: var(--color-text) !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  caret-color: var(--color-primary);
+}
+
+/* Kill ripple / focus overlay */
+ngx-material-intl-tel-input .mat-mdc-form-field-focus-overlay,
+ngx-material-intl-tel-input .mdc-line-ripple {
+  display: none !important;
+}
+
+/* Country selector */
+ngx-material-intl-tel-input .country-selector {
+  color: var(--color-text) !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  background-color: white !important;
+  border: none !important;
+  padding: 0 0.25rem 0 0 !important;
+}
+/* Hide tooltip on flag hover */
+ngx-material-intl-tel-input .country-selector [title],
+ngx-material-intl-tel-input .country-selector button[title] {
+  pointer-events: none;
+}
+
+.mat-mdc-tooltip {
+  display: none !important;
+}
+
+/* Hide any Material tooltip triggered by phone input */
+.mdc-tooltip,
+.mat-tooltip {
+  display: none !important;
+}
+/* ── Dropdown panel (CDK overlay) ── */
+.tel-mat-select-pane.mat-mdc-select-panel,
+.cdk-overlay-container .mat-mdc-autocomplete-panel,
+.cdk-overlay-pane .mat-mdc-autocomplete-panel {
+  background-color: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.1) !important;
+}
+
+.cdk-overlay-container .mat-mdc-option,
+.cdk-overlay-pane .mat-mdc-option {
+  color: var(--color-text) !important;
+  font-size: 0.875rem !important;
+  font-family: var(--font-sans) !important;
+  background-color: white !important;
+}
+
+.cdk-overlay-container .mat-mdc-option:hover,
+.cdk-overlay-pane .mat-mdc-option:hover {
+  background-color: var(--color-surface-alt) !important;
+}
+
+.cdk-overlay-container .mat-mdc-option.mdc-list-item--selected,
+.cdk-overlay-pane .mat-mdc-option.mdc-list-item--selected {
+  background-color: white !important;
+}

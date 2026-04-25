@@ -1,0 +1,103 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-background px-4 py-12"
+>
+  <div class="w-full max-w-md">
+    <div class="rounded-2xl border border-border bg-surface shadow-sm p-8">
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-bold text-foreground">
+          {{ 'REGISTER_TITLE' | transloco }}
+        </h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          {{ 'REGISTER_SUBTITLE' | transloco }}
+        </p>
+      </div>
+
+      <!-- Role Toggle -->
+      <div
+        class="mb-6 flex rounded-lg border border-border bg-surface-alt p-1 gap-1"
+      >
+        <lib-button
+          id="role-customer"
+          type="button"
+          [label]="'REGISTER_ROLE_CUSTOMER' | transloco"
+          [variant]="store.selectedRole() === 'customer' ? 'primary' : 'ghost'"
+          size="sm"
+          btnClass="flex-1"
+          (click)="store.selectRole('customer')"
+          (keydown.enter)="store.selectRole('customer')"
+        />
+        <lib-button
+          id="role-admin"
+          type="button"
+          [label]="'REGISTER_ROLE_ADMIN' | transloco"
+          [variant]="store.selectedRole() === 'admin' ? 'primary' : 'ghost'"
+          size="sm"
+          btnClass="flex-1"
+          (click)="store.selectRole('admin')"
+          (keydown.enter)="store.selectRole('admin')"
+        />
+      </div>
+
+      <!-- Form -->
+      <form
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        class="space-y-4"
+        novalidate
+      >
+
+        <lib-input
+          [label]="'REGISTER_NAME_LABEL' | transloco"
+          [placeholder]="'REGISTER_NAME_PLACEHOLDER' | transloco"
+          controlName="name"
+        />
+
+        <lib-input
+          [label]="'REGISTER_EMAIL_LABEL' | transloco"
+          type="email"
+          [placeholder]="'REGISTER_EMAIL_PLACEHOLDER' | transloco"
+          controlName="email"
+        />
+
+        <lib-input
+          [label]="'REGISTER_PASSWORD_LABEL' | transloco"
+          type="password"
+          [placeholder]="'REGISTER_PASSWORD_PLACEHOLDER' | transloco"
+          controlName="password"
+        />
+
+        <lib-input
+          [label]="'REGISTER_CONFIRM_PASSWORD_LABEL' | transloco"
+          type="password"
+          [placeholder]="'REGISTER_CONFIRM_PASSWORD_PLACEHOLDER' | transloco"
+          controlName="password_confirmation"
+        />
+
+        <lib-phone-input
+          controlName="phone"
+          [label]="'REGISTER_PHONE_LABEL' | transloco"
+          (countryChanged)="store.setCountryFromISO($event)"
+        />
+
+        <lib-button
+          id="btn-register"
+          [label]="'REGISTER_SUBMIT' | transloco"
+          type="submit"
+          variant="primary"
+          size="md"
+          btnClass="w-full mt-2"
+          [isLoading]="store.isLoading()"
+          [disabled]="store.isLoading() || form.invalid"
+        />
+      </form>
+
+      <p class="mt-6 text-center text-sm text-muted-foreground">
+        {{ 'REGISTER_HAS_ACCOUNT' | transloco }}
+        <a routerLink="/login" class="text-primary font-medium hover:underline"
+          >{{ 'REGISTER_LOGIN_LINK' | transloco }}</a
+        >
+      </p>
+    </div>
+  </div>
+</div>

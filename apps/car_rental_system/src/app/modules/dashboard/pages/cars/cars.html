@@ -1,0 +1,152 @@
+<!-- Column header templates -->
+<ng-template #colId>{{ 'CARS_COL_ID' | transloco }}</ng-template>
+<ng-template #colName>{{ 'CARS_COL_NAME' | transloco }}</ng-template>
+<ng-template #colBrand>{{ 'CARS_COL_BRAND' | transloco }}</ng-template>
+<ng-template #colModel>{{ 'CARS_COL_MODEL' | transloco }}</ng-template>
+<ng-template #colPrice>{{ 'CARS_COL_PRICE' | transloco }}</ng-template>
+<ng-template #colActions>{{ 'CARS_COL_ACTIONS' | transloco }}</ng-template>
+
+<div class="p-6">
+  <!-- Actions template for table rows -->
+  <ng-template #actionsTmpl let-car>
+    <div class="flex gap-2">
+      <lib-button
+        [id]="'btn-edit-car-' + car.id"
+        [label]="'ADMIN_CARS_EDIT' | transloco"
+        variant="outlined"
+        size="sm"
+        (click)="store.openEditModal(car)"
+      />
+      <lib-button
+        [id]="'btn-delete-car-' + car.id"
+        [label]="'ADMIN_CARS_DELETE' | transloco"
+        variant="danger"
+        size="sm"
+        (click)="store.openDeleteConfirm(car.id)"
+      />
+    </div>
+  </ng-template>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-foreground">
+      {{ 'ADMIN_CARS_TITLE' | transloco }}
+    </h1>
+    <lib-button
+      id="btn-add-car"
+      [label]="'ADMIN_CARS_ADD' | transloco"
+      variant="primary"
+      (click)="store.openCreateModal()"
+    />
+  </div>
+
+  <!-- Search -->
+  <div class="mb-4">
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <!-- Table -->
+  <lib-table
+    [dataSource]="store.cars()"
+    [columns]="columns()"
+    [loading]="store.carsLoading()"
+    tableTitle="Cars"
+    [stickyFirstColumn]="true"
+    [enablePagination]="true"
+    [listCount]="store.carsMeta()?.total ?? store.cars().length"
+    [currentPage]="store.carsMeta()?.current_page ?? 1"
+    [lastPage]="store.carsMeta()?.last_page ?? 1"
+    [from]="store.carsMeta()?.from ?? 0"
+    [to]="store.carsMeta()?.to ?? 0"
+    [total]="store.carsMeta()?.total ?? 0"
+    [paginationLinks]="store.carsMeta()?.links ?? []"
+    [perPage]="store.filters().per_page ?? 10"
+    [bodyTabTemplateRef]="[{ identifier: 'actions', template: actionsTmpl }]"
+    (pageChange)="store.setPage($event)"
+    (perPageChange)="store.setPerPage($event)"
+  />
+
+  <!-- Car Form Template (passed to lib-modal) -->
+  <ng-template #carFormTmpl>
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4"
+    >
+      <lib-input
+        controlName="name"
+        [label]="'ADMIN_CARS_FORM_NAME' | transloco"
+        [placeholder]="'ADMIN_CARS_FORM_NAME_PLACEHOLDER' | transloco"
+      />
+
+      <div class="flex gap-3">
+        <lib-input
+          controlName="brand"
+          [label]="'ADMIN_CARS_FORM_BRAND' | transloco"
+          [placeholder]="'ADMIN_CARS_FORM_BRAND_PLACEHOLDER' | transloco"
+        />
+        <lib-input
+          controlName="model"
+          [label]="'ADMIN_CARS_FORM_MODEL' | transloco"
+          [placeholder]="'ADMIN_CARS_FORM_MODEL_PLACEHOLDER' | transloco"
+        />
+      </div>
+
+      <div class="flex gap-3">
+        <lib-input
+          controlName="kilometers"
+          [label]="'ADMIN_CARS_FORM_KM' | transloco"
+          type="number"
+          placeholder="0"
+        />
+        <lib-input
+          controlName="price_per_day"
+          [label]="'ADMIN_CARS_FORM_PRICE' | transloco"
+          type="number"
+          placeholder="0.00"
+        />
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2">
+        <lib-button
+          id="btn-cancel-car-modal"
+          [label]="'ADMIN_CARS_FORM_CANCEL' | transloco"
+          variant="ghost"
+          type="button"
+          (click)="store.closeModal()"
+        />
+        <lib-button
+          id="btn-submit-car-modal"
+          [label]="store.modalMode() === 'create' ? ('ADMIN_CARS_FORM_ADD_SUBMIT' | transloco) : ('ADMIN_CARS_FORM_EDIT_SUBMIT' | transloco)"
+          variant="primary"
+          type="submit"
+          [disabled]="form.invalid"
+          [isLoading]="store.submitting()"
+        />
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- Confirm Delete Template -->
+  <ng-template #confirmDeleteTmpl>
+    <div class="flex justify-end gap-3 pt-2">
+      <lib-button
+        id="btn-cancel-delete"
+        [label]="'ADMIN_CARS_DELETE_CANCEL' | transloco"
+        variant="ghost"
+        type="button"
+        (click)="store.cancelDelete()"
+        (keydown.enter)="store.cancelDelete()"
+      />
+      <lib-button
+        id="btn-confirm-delete"
+        [label]="'ADMIN_CARS_DELETE_CONFIRM' | transloco"
+        variant="danger"
+        type="button"
+        [isLoading]="store.submitting()"
+        (click)="store.confirmDelete()"
+        (keydown.enter)="store.confirmDelete()"
+      />
+    </div>
+  </ng-template>
+</div>

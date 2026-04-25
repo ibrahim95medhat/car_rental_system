@@ -1,0 +1,53 @@
+@if (toast(); as t) {
+<div
+  class="fixed z-50 w-full max-w-sm pointer-events-none"
+  [class]="POSITIONS[position()]"
+>
+  <div
+    class="pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm"
+    [class]="styleFor(t.type).wrapper"
+    role="alert"
+  >
+    <!-- Icon -->
+    <lib-base-icon
+      width="1.25rem"
+      height="1.25rem"
+      viewBox="0 0 24 24"
+      iconClass="mt-0.5 shrink-0"
+      fill="none"
+    >
+      <path
+        [attr.d]="styleFor(t.type).icon"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </lib-base-icon>
+
+    <!-- Content -->
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-semibold leading-snug">{{ t.title }}</p>
+      @if (t.message) {
+      <p class="text-sm opacity-80 mt-0.5 leading-snug">{{ t.message }}</p>
+      }
+    </div>
+
+    <!-- Close -->
+    <button
+      type="button"
+      class="shrink-0 opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+      (click)="toastService.dismiss()"
+    >
+      <lib-base-icon width="1rem" height="1rem" viewBox="0 0 16 16" fill="none">
+        <path
+          d="M4 4l8 8M12 4l-8 8"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </lib-base-icon>
+    </button>
+  </div>
+</div>
+}

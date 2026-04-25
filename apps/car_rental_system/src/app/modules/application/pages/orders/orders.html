@@ -1,0 +1,191 @@
+<div class="p-6">
+  <!-- Order form template (passed to ModalService) -->
+  <ng-template #orderFormTmpl>
+    <div class="relative">
+      @if (store.submitting()) {
+      <div
+        class="absolute inset-0 z-10 bg-surface/60 backdrop-blur-[1px] rounded-lg flex items-center justify-center"
+      >
+        <svg
+          class="animate-spin h-6 w-6 text-primary"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8z"
+          />
+        </svg>
+      </div>
+      }
+      <form
+        [formGroup]="store.form"
+        (ngSubmit)="store.onSubmit()"
+        class="flex flex-col gap-4"
+      >
+        <lib-input
+          controlName="car_id"
+          type="number"
+          [label]="'ORDER_FORM_CAR_ID' | transloco"
+          [placeholder]="'ORDER_FORM_CAR_ID_PLACEHOLDER' | transloco"
+        />
+
+        <div class="flex gap-3">
+          <lib-input
+            class="flex-1"
+            controlName="delivery_date"
+            type="date"
+            [min]="today"
+            [label]="'ORDER_FORM_DELIVERY' | transloco"
+          />
+          <lib-input
+            class="flex-1"
+            controlName="receiving_date"
+            type="date"
+            [min]="store.deliverySignal() || today"
+            [label]="'ORDER_FORM_RETURN' | transloco"
+          />
+        </div>
+
+        <!-- Auto-calculated summary -->
+        @if (store.estimatedDays() > 0) {
+        <div
+          class="rounded-lg bg-primary/5 border border-primary/20 px-4 py-2.5 text-sm flex items-center justify-between"
+        >
+          <span class="text-muted"
+            >{{ 'ORDER_FORM_DURATION' | transloco }}</span
+          >
+          <span class="font-semibold text-primary"
+            >{{ store.estimatedDays() }} {{ 'ORDER_FORM_DAYS' | transloco
+            }}</span
+          >
+        </div>
+        }
+
+        <div class="flex gap-3">
+          <div class="flex flex-col gap-1 flex-1">
+            <label
+              for="order-payment-type"
+              class="text-sm font-medium text-foreground"
+              >{{ 'ORDER_FORM_PAYMENT_METHOD' | transloco }}</label
+            >
+            <select
+              id="order-payment-type"
+              formControlName="payment_type"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all capitalize"
+            >
+              @for (type of store.paymentTypes; track type) {
+              <option [value]="type" class="capitalize">{{ type }}</option>
+              }
+            </select>
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <label for="order-type" class="text-sm font-medium text-foreground"
+              >{{ 'ORDER_FORM_ORDER_TYPE' | transloco }}</label
+            >
+            <select
+              id="order-type"
+              formControlName="order_type"
+              class="h-10 rounded-lg border border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all capitalize"
+            >
+              @for (type of store.orderTypes; track type) {
+              <option [value]="type" class="capitalize">{{ type }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @if (store.isInstallment()) {
+        <div class="flex gap-3">
+          <lib-input
+            class="flex-1"
+            controlName="down_payment"
+            type="number"
+            [label]="'ORDER_FORM_DOWN_PAYMENT' | transloco"
+            placeholder="0"
+          />
+          <lib-input
+            class="flex-1"
+            controlName="number_of_installments"
+            type="number"
+            [label]="'ORDER_FORM_INSTALLMENTS_COUNT' | transloco"
+            placeholder="3"
+          />
+        </div>
+        }
+
+        <div class="flex justify-end gap-3 pt-2">
+          <lib-button
+            type="button"
+            variant="ghost"
+            [label]="'ORDER_FORM_CANCEL' | transloco"
+            (click)="store.modalSvc.close()"
+          />
+          <lib-button
+            type="submit"
+            variant="primary"
+            [label]="store.submitting() ? ('ORDER_FORM_SUBMITTING' | transloco) : ('ORDER_FORM_SUBMIT' | transloco)"
+            [disabled]="store.form.invalid || store.submitting()"
+            [isLoading]="store.submitting()"
+          />
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- Status badge template -->
+  <ng-template #statusTmpl let-order>
+    @if (order.payment_status === 'success') {
+    <lib-badge [label]="'ORDER_STATUS_SUCCESS' | transloco" variant="success" />
+    } @else if (order.payment_status === 'failed') {
+    <lib-badge [label]="'ORDER_STATUS_FAILED' | transloco" variant="danger" />
+    } @else {
+    <lib-badge [label]="'ORDER_STATUS_PENDING' | transloco" variant="warning" />
+    }
+  </ng-template>
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-foreground">
+      {{ 'CUSTOMER_ORDERS_TITLE' | transloco }}
+    </h1>
+  </div>
+
+  <!-- Header -->
+  <div class="mb-4">
+    <lib-search-input (searchChange)="store.setSearch($event)" />
+  </div>
+
+  <!-- Table -->
+  <lib-table
+    [dataSource]="store.orders()"
+    [columns]="store.columns"
+    [loading]="store.ordersLoading()"
+    [tableTitle]="'CUSTOMER_ORDERS_TITLE' | transloco"
+    [stickyFirstColumn]="true"
+    [enablePagination]="true"
+    [listCount]="store.ordersMeta()?.total ?? store.orders().length"
+    [currentPage]="store.ordersMeta()?.current_page ?? 1"
+    [lastPage]="store.ordersMeta()?.last_page ?? 1"
+    [from]="store.ordersMeta()?.from ?? 0"
+    [to]="store.ordersMeta()?.to ?? 0"
+    [total]="store.ordersMeta()?.total ?? 0"
+    [paginationLinks]="store.ordersMeta()?.links ?? []"
+    [perPage]="store.perPage()"
+    (pageChange)="store.setPage($event)"
+    (perPageChange)="store.setPerPage($event)"
+    [bodyTabTemplateRef]="[
+      { identifier: 'payment_status', template: statusTmpl }
+    ]"
+  />
+</div>

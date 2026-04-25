@@ -1,0 +1,134 @@
+<div class="p-6 max-w-2xl mx-auto">
+  <!-- Back -->
+  <a
+    routerLink="/orders"
+    class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground mb-6 transition-colors"
+  >
+    <svg
+      width="1rem"
+      height="1rem"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+    {{ 'CUSTOMER_ORDER_DETAIL_BACK' | transloco }}
+  </a>
+
+  @if (loading()) {
+  <div class="flex justify-center py-20">
+    <lib-spinner size="2.5rem" />
+  </div>
+  } @else if (error() || !order()) {
+  <div class="flex flex-col items-center justify-center py-20 text-muted">
+    <p class="text-base font-medium">
+      {{ 'CUSTOMER_ORDER_DETAIL_ERROR' | transloco }}
+    </p>
+    <a routerLink="/orders" class="mt-3 text-sm text-primary hover:underline"
+      >{{ 'CUSTOMER_ORDER_DETAIL_BACK' | transloco }}</a
+    >
+  </div>
+  } @else {
+  <div
+    class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden"
+  >
+    <div class="h-2 bg-linear-to-r from-primary to-primary/60"></div>
+
+    <div class="p-6 flex flex-col gap-5">
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold text-foreground">
+          {{ 'CUSTOMER_ORDER_DETAIL_TITLE' | transloco }} #{{ order()!.id }}
+        </h1>
+        <lib-badge
+          [label]="statusLabel(order()!.payment_status)"
+          [variant]="statusVariant(order()!.payment_status)"
+        />
+      </div>
+
+      <!-- Detail rows -->
+      <div
+        class="divide-y divide-border rounded-lg border border-border overflow-hidden"
+      >
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_CAR' | transloco }}</span
+          >
+          <span class="text-sm font-semibold text-foreground">
+            {{ order()!.car?.name ?? ('#' + order()!.car_id) }}
+          </span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DELIVERY' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >{{ order()!.delivery_date | slice:0:10 }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_RETURN' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >{{ order()!.receiving_date | slice:0:10 }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DAYS' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ order()!['days'] }}</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_TOTAL' | transloco }}</span
+          >
+          <span class="text-sm font-bold text-primary"
+            >${{ order()!.total_price }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_PAYMENT_TYPE' | transloco }}</span
+          >
+          <span class="text-sm text-foreground capitalize"
+            >{{ order()!.payment_type }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_ORDER_TYPE' | transloco }}</span
+          >
+          <span class="text-sm text-foreground capitalize"
+            >{{ order()!.order_type }}</span
+          >
+        </div>
+        @if (order()!.down_payment) {
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DOWN_PAYMENT' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >${{ order()!.down_payment }}</span
+          >
+        </div>
+        } @if (order()!.number_of_installments) {
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_INSTALLMENTS' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >{{ order()!.number_of_installments }}</span
+          >
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }
+</div>
