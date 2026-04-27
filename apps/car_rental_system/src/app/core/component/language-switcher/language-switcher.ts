@@ -24,11 +24,7 @@ interface LangOption {
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
-  imports: [
-    LibClickOutsideDirective,
-    CheckIconComponent,
-    NgComponentOutlet,
-  ],
+  imports: [LibClickOutsideDirective, CheckIconComponent, NgComponentOutlet],
   templateUrl: './language-switcher.html',
 })
 export class LanguageSwitcherComponent implements OnInit {

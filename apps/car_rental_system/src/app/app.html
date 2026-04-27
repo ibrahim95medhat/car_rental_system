@@ -1,2 +1,17 @@
 <router-outlet />
 <lib-toast position="top-right" />
+<lib-offcanvas
+  [isOpen]="offcanvasService.config().isOpen"
+  [side]="offcanvasService.config().side"
+  [title]="offcanvasService.config().title"
+  [description]="offcanvasService.config().description"
+  [showCloseIcon]="offcanvasService.config().showCloseIcon"
+  (closed)="offcanvasService.close()"
+>
+  @if (offcanvasService.config().customizeContent) {
+  <ng-container
+    [ngTemplateOutlet]="offcanvasService.config().customizeContent!"
+    [ngTemplateOutletContext]="{ $implicit: offcanvasService.config().data }"
+  />
+  }
+</lib-offcanvas>

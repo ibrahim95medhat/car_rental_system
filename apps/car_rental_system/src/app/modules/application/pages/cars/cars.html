@@ -1,4 +1,102 @@
 <div class="p-6 max-w-7xl mx-auto">
+  <!-- Car detail offcanvas template -->
+  <ng-template #carDetailTmpl>
+    @if (carDetailLoading()) {
+    <div class="flex justify-center py-10">
+      <svg
+        class="animate-spin h-8 w-8 text-primary"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      </svg>
+    </div>
+    } @else if (carDetailError()) {
+    <div
+      class="mx-4 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm px-4 py-3"
+    >
+      {{ carDetailError() }}
+    </div>
+    } @else if (selectedCar(); as car) {
+    <div class="flex flex-col gap-4 px-4">
+      <!-- Price highlight -->
+      <div
+        class="flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 px-4 py-3"
+      >
+        <span class="text-sm text-muted"
+          >{{ 'CUSTOMER_CARS_PER_DAY' | transloco }}</span
+        >
+        <span class="text-xl font-bold text-primary"
+          >${{ car.price_per_day }}</span
+        >
+      </div>
+
+      <!-- Details grid -->
+      <div
+        class="divide-y divide-border border border-border rounded-xl overflow-hidden"
+      >
+        <div class="flex justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'CUSTOMER_CAR_DETAIL_BRAND' | transloco }}</span
+          >
+          <span class="text-sm font-semibold text-foreground"
+            >{{ car.brand }}</span
+          >
+        </div>
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'CUSTOMER_CAR_DETAIL_MODEL' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ car.model }}</span>
+        </div>
+        <div class="flex justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'CUSTOMER_CAR_DETAIL_KM' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >{{ car.kilometers | number }} km</span
+          >
+        </div>
+        @if (car['color']) {
+        <div class="flex justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'CUSTOMER_CAR_DETAIL_COLOR' | transloco }}</span
+          >
+          <span class="text-sm text-foreground capitalize"
+            >{{ car['color'] }}</span
+          >
+        </div>
+        } @if (car['year']) {
+        <div class="flex justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'CUSTOMER_CAR_DETAIL_YEAR' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ car['year'] }}</span>
+        </div>
+        }
+      </div>
+
+      <!-- Rent Now action -->
+      <button
+        type="button"
+        (click)="rentNow(car.id)"
+        class="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all cursor-pointer"
+      >
+        {{ 'CUSTOMER_CARS_RENT_NOW' | transloco }}
+      </button>
+    </div>
+    }
+  </ng-template>
+
   <!-- Order form template -->
   <ng-template #orderFormTmpl>
     <div class="relative">
@@ -124,6 +222,7 @@
             variant="ghost"
             [label]="'ORDER_FORM_CANCEL' | transloco"
             (click)="ordersStore.modalSvc.close()"
+            (keydown.enter)="ordersStore.modalSvc.close()"
           />
           <lib-button
             type="submit"
@@ -217,12 +316,13 @@
         </div>
 
         <div class="mt-auto pt-3 border-t border-border flex gap-2">
-          <a
-            [routerLink]="['/cars', car.id]"
+          <button
+            type="button"
+            (click)="viewDetails(car.id, car.name)"
             class="flex-1 text-center py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-surface-alt transition-all cursor-pointer"
           >
             {{ 'CUSTOMER_CARS_DETAILS' | transloco }}
-          </a>
+          </button>
           <button
             type="button"
             (click)="rentNow(car.id)"

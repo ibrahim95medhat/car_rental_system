@@ -1,20 +1,29 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { LibToast, DropdownOption } from '@ui-lib';
+import { LibToast, LibOffcanvas, OffcanvasService } from '@ui-lib';
 import { TokenService } from './core/services/token/token.service';
 import { AuthStateService } from './core/services/auth-state/auth-state.service';
 import { AuthService } from './modules/auth/services/auth.service';
 import { catchError, of } from 'rxjs';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, LibToast, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LibToast,
+    LibOffcanvas,
+    ReactiveFormsModule,
+  ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
+  protected readonly offcanvasService = inject(OffcanvasService);
+
   constructor() {
     const token = inject(TokenService);
     const authState = inject(AuthStateService);

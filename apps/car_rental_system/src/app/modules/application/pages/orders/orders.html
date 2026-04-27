@@ -1,4 +1,117 @@
 <div class="p-6">
+  <!-- Order detail offcanvas template -->
+  <ng-template #orderDetailTmpl>
+    @if (orderDetailLoading()) {
+    <div class="flex justify-center py-10">
+      <svg
+        class="animate-spin h-8 w-8 text-primary"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      </svg>
+    </div>
+    } @else if (orderDetailError()) {
+    <div
+      class="mx-4 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm px-4 py-3"
+    >
+      {{ orderDetailError() }}
+    </div>
+    } @else if (selectedOrder(); as o) {
+    <div class="flex flex-col gap-4 px-4">
+      <!-- Status badge -->
+      <div>
+        <lib-badge
+          [label]="o.payment_status === 'success' ? ('ORDER_STATUS_SUCCESS' | transloco) : o.payment_status === 'failed' ? ('ORDER_STATUS_FAILED' | transloco) : ('ORDER_STATUS_PENDING' | transloco)"
+          [variant]="o.payment_status === 'success' ? 'success' : o.payment_status === 'failed' ? 'danger' : 'warning'"
+        />
+      </div>
+
+      <!-- Detail rows -->
+      <div
+        class="divide-y divide-border border border-border rounded-xl overflow-hidden"
+      >
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_CAR' | transloco }}</span
+          >
+          <span class="text-sm font-semibold text-foreground"
+            >{{ o.car?.name ?? ('#' + o.car_id) }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DELIVERY' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ o.delivery_date }}</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_RETURN' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ o.receiving_date }}</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DAYS' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">{{ o['days'] }}</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_TOTAL' | transloco }}</span
+          >
+          <span class="text-sm font-bold text-primary"
+            >${{ o.total_price }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_PAYMENT_TYPE' | transloco }}</span
+          >
+          <span class="text-sm text-foreground capitalize"
+            >{{ o.payment_type }}</span
+          >
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_ORDER_TYPE' | transloco }}</span
+          >
+          <span class="text-sm text-foreground capitalize"
+            >{{ o.order_type }}</span
+          >
+        </div>
+        @if (o.down_payment) {
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_DOWN_PAYMENT' | transloco }}</span
+          >
+          <span class="text-sm text-foreground">${{ o.down_payment }}</span>
+        </div>
+        } @if (o.number_of_installments) {
+        <div class="flex items-center justify-between px-4 py-3 bg-background">
+          <span class="text-xs text-muted font-medium"
+            >{{ 'ORDER_DETAIL_INSTALLMENTS' | transloco }}</span
+          >
+          <span class="text-sm text-foreground"
+            >{{ o.number_of_installments }}</span
+          >
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </ng-template>
+
   <!-- Order form template (passed to ModalService) -->
   <ng-template #orderFormTmpl>
     <div class="relative">
@@ -130,6 +243,7 @@
             variant="ghost"
             [label]="'ORDER_FORM_CANCEL' | transloco"
             (click)="store.modalSvc.close()"
+            (keydown.enter)="store.modalSvc.close()"
           />
           <lib-button
             type="submit"
@@ -184,6 +298,8 @@
     [perPage]="store.perPage()"
     (pageChange)="store.setPage($event)"
     (perPageChange)="store.setPerPage($event)"
+    [viewLabel]="'TABLE_VIEW' | transloco"
+    (handleViewIconClick)="openOrderDetail($event)"
     [bodyTabTemplateRef]="[
       { identifier: 'payment_status', template: statusTmpl }
     ]"

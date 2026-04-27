@@ -96,10 +96,6 @@ export const CustomerOrdersStore = signalStore(
         field: 'id',
         header: 'ID',
         showViewIcon: true,
-        viewIconRouterLink: (row: Record<string, unknown>) => [
-          '/orders',
-          String(row['id']),
-        ],
       },
       {
         field: 'car',

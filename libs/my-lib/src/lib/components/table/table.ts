@@ -23,6 +23,7 @@ import {
   ChevronUpIconComponent,
   ChevronDownIconComponent,
 } from '../icons/index';
+import { LibButton } from '../button/button';
 
 @Component({
   selector: 'lib-table',
@@ -36,6 +37,7 @@ import {
     ViewIconComponent,
     ChevronUpIconComponent,
     ChevronDownIconComponent,
+    LibButton,
   ],
   providers: [DatePipe, CurrencyPipe],
   templateUrl: './table.html',
@@ -69,6 +71,7 @@ export class LibTable<
   readonly emptyMessage = input<string>('No data available.');
   readonly disableHover = input<boolean>(false);
   readonly stickyFirstColumn = input<boolean>(false);
+  readonly viewLabel = input<string>('View');
 
   // Pagination
   readonly enablePagination = input<boolean>(false);
@@ -183,9 +186,17 @@ export class LibTable<
     return column.viewIconRouterLink ? column.viewIconRouterLink(row) : null;
   }
 
+  protected getRowViewIconRow(row: T): TableColumn<T> | undefined {
+    return this.displayedColumns().find((c) => this.shouldShowViewIcon(c, row));
+  }
+
   protected getRowViewIconRouterLink(row: T): string[] | null {
     const col = this.displayedColumns().find((c) => c.viewIconRouterLink);
     return col?.viewIconRouterLink ? col.viewIconRouterLink(row) : null;
+  }
+
+  protected hasRowViewIcon(row: T): boolean {
+    return this.displayedColumns().some((c) => this.shouldShowViewIcon(c, row));
   }
 
   protected onViewIconClick(row: T): void {

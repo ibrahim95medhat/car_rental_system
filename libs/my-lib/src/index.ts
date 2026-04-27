@@ -25,4 +25,7 @@ export * from './lib/components/spinner/spinner';
 export * from './lib/components/empty-state/empty-state';
 export * from './lib/components/badge/badge';
 export * from './lib/components/dropdown/dropdown';
+export * from './lib/components/offcanvas/offcanvas';
 export * from './lib/models/dropdown/dropdown.model';
+export * from './lib/models/offcanvas/offcanvas.model';
+export * from './lib/services/offcanvas/offcanvas.service';

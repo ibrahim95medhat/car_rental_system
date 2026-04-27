@@ -31,9 +31,15 @@ export class LibClickOutsideDirective implements AfterViewInit, OnDestroy {
   }
 
   private isInside(el: HTMLElement): boolean {
-    return (
+    if (
       el === this.element.nativeElement ||
       this.element.nativeElement.contains(el)
-    );
+    ) {
+      return true;
+    }
+    // Treat clicks inside any modal/dialog/toast overlay as "inside"
+    // so they don't trigger clickOutside on the offcanvas panel.
+    const overlaySelectors = ['lib-modal', 'lib-toast', '[data-modal-panel]'];
+    return overlaySelectors.some((sel) => el.closest(sel) !== null);
   }
 }

@@ -1,8 +1,9 @@
 @if (modal().isOpen) {
-<div class="fixed inset-0 z-10002 flex items-center justify-center">
+<div class="fixed inset-0 z-10010 flex items-center justify-center">
   <div
     libClickOutside
     (clickOutside)="closeModal()"
+    data-modal-panel
     class="relative min-w-104 rounded-xl z-10003 bg-background shadow-xl p-6"
   >
     @if (modal().hasCloseIcon) {

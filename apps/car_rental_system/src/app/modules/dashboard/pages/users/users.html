@@ -5,6 +5,75 @@
 <ng-template #colRole>{{ 'USERS_COL_ROLE' | transloco }}</ng-template>
 <ng-template #colCountry>{{ 'USERS_COL_COUNTRY' | transloco }}</ng-template>
 
+<!-- User detail offcanvas template -->
+<ng-template #userDetail>
+  @if (userLoading()) {
+  <div class="flex justify-center py-10">
+    <lib-spinner />
+  </div>
+  } @else if (userError()) {
+  <div
+    class="rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm px-4 py-3 mx-4"
+  >
+    {{ userError() }}
+  </div>
+  } @else if (selectedUser(); as u) {
+  <div class="space-y-4 px-4">
+    <div class="rounded-xl border border-border bg-surface p-4">
+      <div class="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+        <div>
+          <p class="font-semibold text-foreground">
+            {{ 'USER_DETAIL_FIELD_ID' | transloco }}
+          </p>
+          <p>#{{ u.id }}</p>
+        </div>
+        <div>
+          <p class="font-semibold text-foreground">
+            {{ 'USER_DETAIL_FIELD_ROLE' | transloco }}
+          </p>
+          <p class="capitalize">{{ u.role }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid gap-4 text-sm text-muted-foreground">
+      <div class="rounded-xl border border-border bg-surface p-4">
+        <p class="font-semibold text-foreground mb-2">
+          {{ 'USER_DETAIL_FIELD_CONTACT' | transloco }}
+        </p>
+        <div class="space-y-2 text-foreground/90">
+          <p>{{ 'USER_DETAIL_FIELD_EMAIL' | transloco }}: {{ u.email }}</p>
+          <p>
+            {{ 'USER_DETAIL_FIELD_PHONE' | transloco }}: {{ u.phone ?? '—' }}
+          </p>
+          <p>
+            {{ 'USER_DETAIL_FIELD_COUNTRY' | transloco }}: {{ u.country ?? '—'
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-border bg-surface p-4">
+        <p class="font-semibold text-foreground mb-2">
+          {{ 'USER_DETAIL_FIELD_HISTORY' | transloco }}
+        </p>
+        <div class="space-y-2 text-foreground/90">
+          <p>{{ 'USER_DETAIL_FIELD_WALLET' | transloco }}: {{ u.wallet }}</p>
+          <p>
+            {{ 'USER_DETAIL_FIELD_CREATED' | transloco }}: {{ u.created_at |
+            date: 'mediumDate' }}
+          </p>
+          <p>
+            {{ 'USER_DETAIL_FIELD_UPDATED' | transloco }}: {{ u.updated_at |
+            date: 'mediumDate' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</ng-template>
+
 <div class="p-6">
   <div class="mb-4">
     <lib-search-input (searchChange)="store.setSearch($event)" />
@@ -13,6 +82,7 @@
   <lib-table
     [dataSource]="store.users()"
     [columns]="columns()"
+    [viewLabel]="'TABLE_VIEW' | transloco"
     [loading]="store.usersLoading()"
     [tableTitle]="'ADMIN_USERS_TITLE' | transloco"
     [stickyFirstColumn]="true"
@@ -27,5 +97,6 @@
     [perPage]="store.filters().per_page ?? 10"
     (pageChange)="store.setPage($event)"
     (perPageChange)="store.setPerPage($event)"
+    (handleViewIconClick)="openUserDetail($event)"
   />
 </div>

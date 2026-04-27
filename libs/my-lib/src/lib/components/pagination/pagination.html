@@ -1,22 +1,23 @@
-<div class="flex flex-col gap-3">
+<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-  <!-- Top row: info + per-page -->
-  <div class="flex items-center justify-between gap-2">
-    <!-- Showing X–Y of Z -->
-    <p class="text-xs sm:text-sm text-muted">
-      <span class="hidden sm:inline">{{ 'PAGINATION_SHOWING' | transloco }} </span>
-      <span class="font-medium text-foreground">{{ from() }}</span>
-      <span class="hidden sm:inline"> {{ 'PAGINATION_TO' | transloco }} </span>
-      <span class="sm:hidden">–</span>
-      <span class="font-medium text-foreground">{{ to() }}</span>
-      {{ 'PAGINATION_OF' | transloco }}
-      <span class="font-medium text-foreground">{{ total() }}</span>
-      <span class="hidden sm:inline"> {{ 'PAGINATION_RESULTS' | transloco }}</span>
-    </p>
+  <!-- Left: info text -->
+  <p class="text-xs sm:text-sm text-muted text-center sm:text-start">
+    <span class="hidden sm:inline">{{ 'PAGINATION_SHOWING' | transloco }} </span>
+    <span class="font-medium text-foreground">{{ from() }}</span>
+    <span class="hidden sm:inline"> {{ 'PAGINATION_TO' | transloco }} </span>
+    <span class="sm:hidden">–</span>
+    <span class="font-medium text-foreground">{{ to() }}</span>
+    {{ 'PAGINATION_OF' | transloco }}
+    <span class="font-medium text-foreground">{{ total() }}</span>
+    <span class="hidden sm:inline"> {{ 'PAGINATION_RESULTS' | transloco }}</span>
+  </p>
 
-    <!-- Per page selector -->
-    <div class="flex items-center gap-1.5">
-      <span class="hidden sm:inline text-sm text-muted whitespace-nowrap">
+  <!-- Right: controls -->
+  <div class="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
+
+    <!-- Per-page selector -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs sm:text-sm text-muted whitespace-nowrap">
         {{ 'PAGINATION_ROWS_PER_PAGE' | transloco }}
       </span>
       <select
@@ -25,55 +26,58 @@
         class="h-8 rounded-lg border border-border bg-surface px-2 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer transition-all"
       >
         @for (opt of perPageOptions(); track opt) {
-        <option [value]="opt" [selected]="opt === perPage()">{{ opt }}</option>
+          <option [value]="opt" [selected]="opt === perPage()">{{ opt }}</option>
         }
       </select>
     </div>
-  </div>
 
-  <!-- Bottom row: page navigation -->
-  <div class="flex items-center justify-between sm:justify-end gap-2">
+    <!-- Page navigation -->
+    <div class="flex items-center gap-1">
 
-    <!-- Prev -->
-    <button
-      (click)="goTo(currentPage() - 1)"
-      [disabled]="!hasPrev()"
-      class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-sm transition-all hover:bg-surface disabled:opacity-40 disabled:cursor-not-allowed"
-    >
-      <span class="inline-flex rtl:scale-x-[-1]"><lib-arrow-left-icon /></span>
-    </button>
-
-    <!-- Mobile: current / total -->
-    <span class="sm:hidden text-sm text-foreground font-medium">
-      {{ currentPage() }} / {{ lastPage() }}
-    </span>
-
-    <!-- Desktop: page number buttons -->
-    <div class="hidden sm:flex items-center gap-1">
-      @for (link of pageLinks(); track link.label) {
+      <!-- Prev -->
       <button
-        (click)="goTo(link.page)"
-        class="flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm transition-all"
-        [class.bg-primary]="link.active"
-        [class.text-primary-foreground]="link.active"
-        [class.border-primary]="link.active"
-        [class.hover:bg-primary/90]="link.active"
-        [class.border-border]="!link.active"
-        [class.hover:bg-surface]="!link.active"
+        (click)="goTo(currentPage() - 1)"
+        [disabled]="!hasPrev()"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-sm transition-all hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed"
       >
-        {{ link.label }}
+        <span class="inline-flex rtl:scale-x-[-1]"><lib-arrow-left-icon /></span>
       </button>
-      }
-    </div>
 
-    <!-- Next -->
-    <button
-      (click)="goTo(currentPage() + 1)"
-      [disabled]="!hasNext()"
-      class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-sm transition-all hover:bg-surface disabled:opacity-40 disabled:cursor-not-allowed"
-    >
-      <span class="inline-flex rtl:scale-x-[-1]"><lib-arrow-right-icon /></span>
-    </button>
+      <!-- Mobile: current / total -->
+      <span class="sm:hidden px-3 text-sm text-foreground font-medium">
+        {{ currentPage() }} / {{ lastPage() }}
+      </span>
+
+      <!-- Desktop: page number buttons -->
+      <div class="hidden sm:flex items-center gap-1">
+        @for (link of pageLinks(); track link.label) {
+          <button
+            (click)="goTo(link.page)"
+            class="flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium transition-all"
+            [class.bg-primary]="link.active"
+            [class.text-primary-foreground]="link.active"
+            [class.border-primary]="link.active"
+            [class.hover:bg-primary/90]="link.active"
+            [class.shadow-sm]="link.active"
+            [class.border-border]="!link.active"
+            [class.text-foreground]="!link.active"
+            [class.hover:bg-surface-alt]="!link.active"
+          >
+            {{ link.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Next -->
+      <button
+        (click)="goTo(currentPage() + 1)"
+        [disabled]="!hasNext()"
+        class="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-sm transition-all hover:bg-surface-alt disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <span class="inline-flex rtl:scale-x-[-1]"><lib-arrow-right-icon /></span>
+      </button>
+
+    </div>
   </div>
 
 </div>
