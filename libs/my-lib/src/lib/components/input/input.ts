@@ -8,10 +8,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { LibValidationError } from '../validation-error/validation-error';
 
-export const controlContainerViewProvider = {
-  provide: ControlContainer,
-  useFactory: () => inject(ControlContainer, { skipSelf: true }),
-};
+import { controlContainerViewProvider } from '../../utils/control-container.provider';
+
 
 @Component({
   selector: 'lib-input',

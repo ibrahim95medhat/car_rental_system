@@ -10,3 +10,6 @@ export * from './users-icon';
 export * from './cars-icon';
 export * from './orders-icon';
 export * from './logout-icon';
+export * from './check-icon';
+export * from './flag-us-icon';
+export * from './flag-sa-icon';

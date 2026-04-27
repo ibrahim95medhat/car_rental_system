@@ -13,7 +13,8 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { NgxMaterialIntlTelInputComponent } from 'ngx-material-intl-tel-input';
-import { controlContainerViewProvider } from '../input/input';
+import { controlContainerViewProvider } from '../../utils/control-container.provider';
+
 
 @Component({
   selector: 'lib-phone-input',

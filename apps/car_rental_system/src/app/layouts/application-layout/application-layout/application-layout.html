@@ -1,40 +1,35 @@
-<!-- Nav label templates -->
+<!-- Sidebar label templates -->
 <ng-template #tplCars>{{ 'NAV_CARS' | transloco }}</ng-template>
 <ng-template #tplOrders>{{ 'NAV_MY_ORDERS' | transloco }}</ng-template>
 <ng-template #tplInstallments>{{ 'NAV_INSTALLMENTS' | transloco }}</ng-template>
+<ng-template #tplLogout>{{ 'SIDEBAR_LOGOUT' | transloco }}</ng-template>
 
-<div class="flex flex-col min-h-screen bg-background">
-  <!-- Navbar -->
-  <lib-navbar
-    [navItems]="navItems()"
-    [user]="navbarUser()"
+<div class="flex h-screen bg-background overflow-hidden">
+  <!-- Sidebar -->
+  <lib-sidebar
+    [items]="sidebarItems()"
+    [footerItems]="footerItems()"
     [showTheme]="true"
-    [showLang]="true"
-    (menuToggle)="onMenuToggle()"
-    (langToggle)="onLangToggle()"
-  >
-    <lib-button
-      slot="actions"
-      type="button"
-      variant="outlined"
-      size="sm"
-      [label]="'SIDEBAR_LOGOUT' | transloco"
-      (click)="onLogout()"
-    />
-  </lib-navbar>
+    [showCollapse]="true"
+    [labelDarkMode]="'SIDEBAR_DARK_MODE' | transloco"
+    [labelLightMode]="'SIDEBAR_LIGHT_MODE' | transloco"
+    [labelCollapse]="'SIDEBAR_COLLAPSE' | transloco"
+    (handleAction)="handleAction($event)"
+  />
 
-  <!-- Page content -->
-  <main class="flex-1 container mx-auto px-4 py-8">
-    <router-outlet />
-  </main>
+  <!-- Main area -->
+  <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
+    <!-- Navbar -->
+    <lib-navbar [user]="navbarUser()" [showTheme]="false" [showLang]="false">
+      <app-language-switcher slot="actions" />
+    </lib-navbar>
 
-  <!-- Modal outlet -->
-  <lib-modal [modal]="modalService.config()" />
-
-  <!-- Footer -->
-  <footer
-    class="border-t border-border py-4 text-center text-xs text-muted-foreground"
-  >
-    &copy; {{ 2026 }} {{ 'FOOTER_COPYRIGHT' | transloco }}
-  </footer>
+    <!-- Page content -->
+    <main class="flex-1 overflow-y-auto p-6">
+      <router-outlet />
+    </main>
+  </div>
 </div>
+
+<!-- Modal outlet -->
+<lib-modal [modal]="modalService.config()" />

@@ -24,9 +24,10 @@
     <lib-navbar
       [user]="store.navbarUser()"
       [showTheme]="false"
-      [showLang]="true"
-      (langToggle)="store.toggleLang()"
-    />
+      [showLang]="false"
+    >
+      <app-language-switcher slot="actions" />
+    </lib-navbar>
 
     <!-- Page content -->
     <main class="flex-1 overflow-y-auto p-6">

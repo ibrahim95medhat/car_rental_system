@@ -20,10 +20,18 @@ import {
 } from '@ui-lib';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { DashboardLayoutStore } from '../store/dashboard-layout.store';
+import { LanguageSwitcherComponent } from '../../../core/component/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [RouterOutlet, LibNavbar, LibSidebar, LibModal, TranslocoPipe],
+  imports: [
+    RouterOutlet,
+    LibNavbar,
+    LibSidebar,
+    LibModal,
+    TranslocoPipe,
+    LanguageSwitcherComponent,
+  ],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.css',
   providers: [DashboardLayoutStore],

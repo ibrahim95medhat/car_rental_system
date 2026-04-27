@@ -1,10 +1,9 @@
-<div
-  [class]="'fixed inset-0 z-[10002] items-center justify-center ' + (modal().isOpen ? 'flex' : 'hidden')"
->
+@if (modal().isOpen) {
+<div class="fixed inset-0 z-10002 flex items-center justify-center">
   <div
     libClickOutside
     (clickOutside)="closeModal()"
-    class="relative min-w-[26rem] rounded-xl z-[10003] bg-background shadow-xl p-6"
+    class="relative min-w-104 rounded-xl z-10003 bg-background shadow-xl p-6"
   >
     @if (modal().hasCloseIcon) {
     <div class="flex justify-end mb-4">
@@ -14,6 +13,7 @@
         size="sm"
         aria-label="Close modal"
         (click)="closeModal()"
+        (keydown.enter)="closeModal()"
       >
         <lib-close-icon slot="start-icon" />
       </lib-button>
@@ -33,6 +33,5 @@
   </div>
 </div>
 
-<div
-  [class]="'fixed inset-0 bg-black/60 ' + (modal().isOpen ? 'block z-[10001]' : 'hidden')"
-></div>
+<div class="fixed inset-0 bg-black/60 z-10001"></div>
+}

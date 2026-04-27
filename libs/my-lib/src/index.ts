@@ -24,3 +24,5 @@ export * from './lib/components/search-input/search-input';
 export * from './lib/components/spinner/spinner';
 export * from './lib/components/empty-state/empty-state';
 export * from './lib/components/badge/badge';
+export * from './lib/components/dropdown/dropdown';
+export * from './lib/models/dropdown/dropdown.model';
